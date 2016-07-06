@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-import sys, os, time
+import sys, os, time, tarfile
 from stat import *
 #
 # Dependency: pysacio
@@ -37,6 +37,9 @@ else:
 #  this is the loop over files the above just creates a list
 #     of files.
 #
+
+tar = tarfile.open('good-fits.tar.gz', 'w:gz')
+
 for fname in files:
 	#
 	# here's where the SAC File is read in
@@ -49,6 +52,8 @@ for fname in files:
 		#   Get the msifit and list a mv command if
 		#   the file does not fit 85% of the signal power
 		q = pysacio.GetHvalue('user5',hf, hi, hs)
-		if(q < 85):
-			print "mv ", fname, "./BadFits"
+		if q >= 85:
+			tar.add(fname)
+
+tar.close()
 #

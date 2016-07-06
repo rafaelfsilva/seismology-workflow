@@ -34,11 +34,16 @@ e_pysacio = Executable('pysacio.py', arch='x86_64', installed=False)
 e_pysacio.addPFN(PFN('file://' + base_dir + '/bin/pysacio.py', 'local'))
 workflow.addExecutable(e_pysacio)
 
+e_pytutil = Executable('pytutil.py', arch='x86_64', installed=False)
+e_pytutil.addPFN(PFN('file://' + base_dir + '/bin/pytutil.py', 'local'))
+workflow.addExecutable(e_pytutil)
+
 e_siftsstfbymisfit = Executable('siftSTFByMisfit', arch='x86_64', installed=False)
 e_siftsstfbymisfit.addPFN(PFN('file://' + base_dir + '/bin/siftSTFByMisfit.py', 'local'))
 workflow.addExecutable(e_siftsstfbymisfit)
 
 t_siftsstfbymisfit = Transformation('siftSTFByMisfit')
+t_siftsstfbymisfit.uses(e_pytutil)
 t_siftsstfbymisfit.uses(e_pysacio)
 t_siftsstfbymisfit.uses(e_siftsstfbymisfit)
 workflow.addTransformation(t_siftsstfbymisfit)
@@ -78,6 +83,9 @@ for out_name in output_files:
   f_decon = File(out_name)
   j_siftsstfbymisfit.uses(f_decon, link=Link.INPUT)
   j_siftsstfbymisfit.addArguments(out_name)
+
+f_fits = File('good-fits.tar.gz')
+j_siftsstfbymisfit.uses(f_fits, link=Link.OUTPUT, transfer=True)
 
 workflow.addJob(j_siftsstfbymisfit)
 

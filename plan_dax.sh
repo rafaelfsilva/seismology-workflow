@@ -21,4 +21,5 @@ pegasus-plan --conf pegasus.properties \
     --output-dir $DIR/output \
     --sites compute \
     --cluster horizontal \
+    --force \
     --submit
