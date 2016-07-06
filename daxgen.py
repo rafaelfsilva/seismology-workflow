@@ -49,7 +49,7 @@ t_siftsstfbymisfit.uses(e_siftsstfbymisfit)
 workflow.addTransformation(t_siftsstfbymisfit)
 
 # Cluster Profile
-p_cluster = Profile(Namespace.PEGASUS, 'clusters.size', '10')
+p_cluster = Profile(Namespace.PEGASUS, 'clusters.size', '50')
 e_sg1iterdecon.addProfile(p_cluster)
 
 # IterDecon Jobs
