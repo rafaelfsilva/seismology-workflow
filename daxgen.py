@@ -5,11 +5,12 @@ from Pegasus.DAX3 import *
 
 # API Documentation: http://pegasus.isi.edu/documentation
 
-if len(sys.argv) != 2:
+if len(sys.argv) != 3:
     sys.stderr.write("Usage: %s DAXFILE\n" % (sys.argv[0]))
     exit(1)
 
 daxfile = sys.argv[1]
+num = int(sys.argv[2])
 
 base_dir = os.path.abspath('.')
 
@@ -42,11 +43,9 @@ e_siftsstfbymisfit = Executable('siftSTFByMisfit', arch='x86_64', installed=Fals
 e_siftsstfbymisfit.addPFN(PFN('file://' + base_dir + '/bin/siftSTFByMisfit.py', 'local'))
 workflow.addExecutable(e_siftsstfbymisfit)
 
-t_siftsstfbymisfit = Transformation('siftSTFByMisfit')
-t_siftsstfbymisfit.uses(e_pytutil)
-t_siftsstfbymisfit.uses(e_pysacio)
-t_siftsstfbymisfit.uses(e_siftsstfbymisfit)
-workflow.addTransformation(t_siftsstfbymisfit)
+e_wrapper = Executable('wrapper_siftSTFByMisfit', arch='x86_64', installed=False)
+e_wrapper.addPFN(PFN('file://' + base_dir + '/bin/wrapper_siftSTFByMisfit.sh ', 'local'))
+workflow.addExecutable(e_wrapper)
 
 # Cluster Profile
 p_cluster = Profile(Namespace.PEGASUS, 'clusters.size', '50')
@@ -54,6 +53,8 @@ e_sg1iterdecon.addProfile(p_cluster)
 
 # IterDecon Jobs
 output_files = []
+
+count = 0
 
 for base_file in os.listdir('input/EGF'):
   j_iterdecon = Job(name='sG1IterDecon')
@@ -72,12 +73,19 @@ for base_file in os.listdir('input/EGF'):
 
   j_iterdecon.uses(f_mshock, link=Link.INPUT)
   j_iterdecon.uses(f_egf, link=Link.INPUT)
-  j_iterdecon.uses(f_decon, link=Link.OUTPUT, transfer=False)
+  j_iterdecon.uses(f_decon, link=Link.OUTPUT, transfer=False, register=False)
   j_iterdecon.addArguments(f_mshock, f_egf)
   workflow.addJob(j_iterdecon)
 
+  count += 1
+  if count == num:
+    break
+
 # siftsSTFByMisfit Job
-j_siftsstfbymisfit = Job(name='siftSTFByMisfit')
+j_siftsstfbymisfit = Job(name='wrapper_siftSTFByMisfit')
+j_siftsstfbymisfit.uses(e_pytutil, link=Link.INPUT, executable=True)
+j_siftsstfbymisfit.uses(e_pysacio, link=Link.INPUT, executable=True)
+j_siftsstfbymisfit.uses(e_siftsstfbymisfit, link=Link.INPUT, executable=True)
 
 for out_name in output_files:
   f_decon = File(out_name)

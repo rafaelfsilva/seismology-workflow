@@ -4,11 +4,11 @@
 
     <!-- The local site contains information about the submit host -->
     <site handle="local">
-	<directory type="shared-scratch" path="${PWD}/work/scratch">
-            <file-server operation="all" url="file://${PWD}/work/scratch"/>
+	<directory type="shared-scratch" path="${PWD}/scratch">
+            <file-server operation="all" url="file://${PWD}/scratch"/>
         </directory>
-        <directory type="local-storage" path="${PWD}/work/outputs">
-            <file-server operation="all" url="file://${PWD}/work/outputs"/>
+        <directory type="local-storage" path="${PWD}/outputs">
+            <file-server operation="all" url="file://${PWD}/outputs"/>
 	</directory>
     </site>
 

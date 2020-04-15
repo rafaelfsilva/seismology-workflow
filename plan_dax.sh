@@ -20,6 +20,6 @@ pegasus-plan --conf pegasus.properties \
     --input-dir $DIR/input \
     --output-dir $DIR/output \
     --sites compute \
-    --cluster horizontal \
     --force \
+    --cleanup none \
     --submit
